@@ -9,15 +9,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
-public class StreamingController {
+public class StreamerController {
     @Autowired
     private VideoStore videoStore;
 
-    @GetMapping("shows/{show}/{season}/{episode}")
+    @GetMapping("/shows")
+    public List<String> getShows() {
+        File[] dirs = new File("../../Desktop/Shows").listFiles(File::isDirectory);
+        return Arrays.stream(dirs).map(dir -> dir.getName()).collect(Collectors.toList());
+    }
+
+    @GetMapping("/shows/{show}/{season}/{episode}")
     public ResponseEntity<?> getEpisode(@PathVariable String show,
                                         @PathVariable int season,
                                         @PathVariable int episode) throws IOException {
