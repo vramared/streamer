@@ -19,20 +19,33 @@ import java.util.stream.Collectors;
 @RestController
 public class StreamerController {
     @Autowired
-    private VideoStore videoStore;
+    private VideoService videoService;
+
+    public static final String rootDir = "../../Desktop/Shows";
 
     @GetMapping("/shows")
     public List<String> getShows() {
-        File[] dirs = new File("../../Desktop/Shows").listFiles(File::isDirectory);
+        File[] dirs = new File(this.rootDir).listFiles(File::isDirectory);
         return Arrays.stream(dirs).map(dir -> dir.getName()).collect(Collectors.toList());
+    }
+
+    @GetMapping("/shows/{show}/seasons")
+    public int getEpisodes(@PathVariable String show) {
+        String showPath = String.format("%s/%s", this.rootDir, show);
+        return new File(showPath).listFiles(File::isDirectory).length;
+    }
+
+    @GetMapping("/shows/{show}/{season_id}/episodes")
+    public int getEpisodes(@PathVariable String show, @PathVariable int season_id) {
+        String showPath = String.format("%s/%s/S%d", this.rootDir, show, season_id);
+        return new File(showPath).list().length;
     }
 
     @GetMapping("/shows/{show}/{season}/{episode}")
     public ResponseEntity<?> getEpisode(@PathVariable String show,
                                         @PathVariable int season,
                                         @PathVariable int episode) throws IOException {
-        String filePath = String.format("%s/S%d/S%02dE%02d.mp4", show, season, season, episode);
-        Resource resource = this.videoStore.getResource(filePath);
+        Resource resource = this.videoService.serveVideoResource(show, season, episode);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(resource.contentLength());
         headers.set("Content-Type", "video/mp4");
