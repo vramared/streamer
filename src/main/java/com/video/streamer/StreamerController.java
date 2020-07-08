@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -21,24 +22,25 @@ public class StreamerController {
     @Autowired
     private VideoService videoService;
 
-    public static final String rootDir = "../../Desktop/Shows";
+    public static final String rootDir = StoreConfig.filesystemRoot().getAbsolutePath();
 
     @GetMapping("/shows")
     public List<String> getShows() {
-        File[] dirs = new File(this.rootDir).listFiles(File::isDirectory);
-        return Arrays.stream(dirs).map(dir -> dir.getName()).collect(Collectors.toList());
+        File[] dirs = new File(rootDir).listFiles(File::isDirectory);
+        return Arrays.stream(dirs).map(File::getName).collect(Collectors.toList());
     }
 
     @GetMapping("/shows/{show}/seasons")
-    public int getEpisodes(@PathVariable String show) {
-        String showPath = String.format("%s/%s", this.rootDir, show);
-        return new File(showPath).listFiles(File::isDirectory).length;
+    public int getSeasons(@PathVariable String show) {
+        String path = String.format("%s/%s", rootDir, show);
+        return Objects.requireNonNull(new File(path).listFiles(File::isDirectory)).length;
     }
 
     @GetMapping("/shows/{show}/{season_id}/episodes")
     public int getEpisodes(@PathVariable String show, @PathVariable int season_id) {
-        String showPath = String.format("%s/%s/S%d", this.rootDir, show, season_id);
-        return new File(showPath).list().length;
+        String path = String.format("%s/%s/S%d", rootDir, show, season_id);
+        String[] episodes = Objects.requireNonNull(new File(path).list());
+        return (int) Arrays.stream(episodes).filter(name -> !name.startsWith(".")).count();
     }
 
     @GetMapping("/shows/{show}/{season}/{episode}")

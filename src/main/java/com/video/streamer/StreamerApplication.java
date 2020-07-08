@@ -1,5 +1,6 @@
 package com.video.streamer;
 
+import net.samuelcampos.usbdrivedetector.USBDeviceDetectorManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

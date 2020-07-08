@@ -28,6 +28,11 @@
 			<artifactId>spring-content-fs-boot-starter</artifactId>
 			<version>1.1.0.M2</version>
 		</dependency>
+		<dependency>
+			<groupId>net.samuelcampos</groupId>
+			<artifactId>usbdrivedetector</artifactId>
+			<version>2.1.1</version>
+		</dependency>
 
 		<!-- Test Dependencies -->
 		<dependency>
